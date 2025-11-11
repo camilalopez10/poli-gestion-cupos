@@ -1,0 +1,6 @@
+MANUAL DE USUARIO - POLI GESTIÓN CUPOS (v3)
+- Coloque la carpeta en C:\xampp1\htdocs\poli-gestion-cupos
+- Importe db/poli_gestion_full.sql
+- Abra http://localhost/poli-gestion-cupos/login.php y entre con admin@elpoli.edu.co / 1234
+- Vaya a Asignaturas para ver listado, crear y usar el botón Importar (CSV). Preview y confirmar inserción.
+- Vaya a Análisis Histórico para ver las gráficas (Chart.js).

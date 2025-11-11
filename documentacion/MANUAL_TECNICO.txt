@@ -1,0 +1,11 @@
+MANUAL TÉCNICO - POLI GESTIÓN CUPOS (v3)
+Fecha: 2025-11-09
+
+Resumen de cambios y cómo usar:
+- Importar la BD completa: db/poli_gestion_full.sql en phpMyAdmin.
+- Usuario admin: admin@elpoli.edu.co / 1234
+- Rutas importantes:
+  - /asignaturas_ui.php -> gestión e importación integradas
+  - /analisis_historico.php -> gráficas Chart.js (estilo moderno)
+  - /php/export_asignaturas_xlsx.php -> exporta XLSX si PhpSpreadsheet está instalado en php/vendor/autoload.php; si no, exporta CSV.
+- Notas: Para activar export XLSX con PhpSpreadsheet, instale la librería o suba la carpeta vendor con autoload.php.

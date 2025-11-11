@@ -1,0 +1,1 @@
+Proyecto Angular - placeholder\nEn esta carpeta puedes agregar el proyecto Angular cuando decidas migrar.\nActualmente inactivo a petición del cliente.

@@ -1,0 +1,3 @@
+programa,codigo_asig,nombre_asig,tipo_prereq_or_co,requisito_codigo
+Ingenieria,INF105,Programación Básica,,
+Ingenieria,INF210,Bases de Datos,pre,INF105
