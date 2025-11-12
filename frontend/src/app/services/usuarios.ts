@@ -21,7 +21,8 @@ export class UsuariosService {
 
   // Create a new user - backend endpoint name assumed; adjust if your API differs
   // Password is optional in the payload for now (security handled later)
-  create(payload: { nombre: string; correo: string; rol: string; password?: string }) {
+  create(payload: { nombre: string; correo: string; rol: string; password: string }) {
+    console.log('Creating user with payload:', payload);
     const url = `${this.baseUrl}/api/createUsuario`;
     return this.http.post<any>(url, payload);
   }
