@@ -1,6 +1,5 @@
 // controllers/usuariosController.js
 import { db } from "../database/db.js";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 // Obtener todos los usuarios
@@ -43,9 +42,8 @@ export const createUsuario = async (req, res) => {
         .json({ message: "Los campos nombre, correo y password son obligatorios" });
     }
 
-    // Hashear la contraseña antes de guardarla
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-    data.password = hashedPassword;
+  // Nota: NO se encripta la contraseña (almacenamiento en texto plano según solicitud)
+  // Guardamos la contraseña tal cual en `data.password`
 
     const query = "INSERT INTO usuarios (nombre, correo, password, rol) VALUES (?, ?, ?, ?)";
     const values = [data.nombre, data.correo, data.password, data.rol || "docente"];
@@ -79,11 +77,10 @@ export const loginUsuario = async (req, res) => {
     }
 
     const usuario = rows[0];
-    //const passwordMatch = await bcrypt.compare(password, usuario.password);
-
-    //if (!passwordMatch) {
-    //  return res.status(401).json({ message: "Credenciales inválidas" });
-    //}
+    // Comparación en texto plano (no encriptado)
+    if (usuario.password !== password) {
+      return res.status(401).json({ message: "Credenciales inválidas" });
+    }
 
     // Crear token JWT opcional
     //const token = jwt.sign({ id: usuario.id, rol: usuario.rol }, process.env.JWT_SECRET || "secret", {
@@ -107,10 +104,7 @@ export const updateUsuario = async (req, res) => {
     const keys = Object.keys(req.body);
     const values = Object.values(req.body);
 
-    if (keys.includes("password")) {
-      const idx = keys.indexOf("password");
-      values[idx] = await bcrypt.hash(values[idx], 10);
-    }
+    // No hasheamos la contraseña en las actualizaciones; se guarda tal cual si se proporciona
 
     const setClause = keys.map((key) => `${key} = ?`).join(", ");
     values.push(req.params.id);
