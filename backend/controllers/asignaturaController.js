@@ -79,9 +79,9 @@ export const updateAsignatura = async (req, res) => {
     }
 
     const setClause = keys.map((key) => `${key} = ?`).join(", ");
-    values.push(req.params.id);
+    values.push(req.params.codigo);
 
-    const [result] = await db.query(`UPDATE asignaturas SET ${setClause} WHERE id = ?`, values);
+    const [result] = await db.query(`UPDATE asignaturas SET ${setClause} WHERE codigo = ?`, values);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "No se encuentra registrado" });
@@ -96,8 +96,9 @@ export const updateAsignatura = async (req, res) => {
 
 // Eliminar una asignatura
 export const deleteAsignatura = async (req, res) => {
+    console.log("Deleting asignatura with codigo:", req.params.codigo);
   try {
-    const [result] = await db.query("DELETE FROM asignaturas WHERE id = ?", [req.params.id]);
+    const [result] = await db.query("DELETE FROM asignaturas WHERE codigo = ?", [req.params.codigo]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "No se encuentra registrado" });
