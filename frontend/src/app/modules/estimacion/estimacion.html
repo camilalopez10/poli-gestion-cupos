@@ -1,0 +1,60 @@
+<div class="wrap">
+	<h1>Estimación de Cupos</h1>
+
+	<div class="panel">
+		<label>
+			Periodo histórico de referencia
+			<select [(ngModel)]="periodoSeleccionado" name="periodoSeleccionado">
+				<option value="">Seleccione</option>
+				<option *ngFor="let p of periodos" [value]="p">{{ p }}</option>
+			</select>
+		</label>
+
+		<label>
+			Asignatura
+			<select [(ngModel)]="asignaturaSeleccionada" name="asignaturaSeleccionada">
+				<option [ngValue]="null">Seleccione</option>
+				<option *ngFor="let a of asignaturas" [ngValue]="a">{{ a.codigo || a.codigo_asignatura }} - {{ a.nombre || a.nombre_asignatura }}</option>
+			</select>
+		</label>
+
+		<label>
+			Capacidad del aula
+			<input type="number" [(ngModel)]="capacidadAula" name="capacidadAula" />
+		</label>
+
+		<div class="actions">
+			<button (click)="estimar()">Estimar cupos</button>
+		</div>
+	</div>
+
+	<div *ngIf="sugerido !== null" class="resultado">
+		<h3>Cupos sugeridos para {{ periodoSeleccionado }}: {{ sugerido }}</h3>
+		<label>
+			Cupos finales asignados
+			<input type="number" [(ngModel)]="finalAsignado" [max]="capacidadAula || null" />
+		</label>
+		<p class="helper">No puede superar la capacidad del aula ({{ capacidadAula || 'sin especificar' }})</p>
+		<div class="actions">
+			<button (click)="guardar()">Guardar estimación</button>
+			<button (click)="cancelar()">Cancelar</button>
+		</div>
+	</div>
+
+	<h2 style="margin-top:18px">Cupos estimados guardados</h2>
+	<table class="tbl">
+		<thead>
+			<tr><th>Código</th><th>Año</th><th>Periodo</th><th>Cupos</th><th>Fecha</th></tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let e of estimaciones">
+				<td>{{ e.codigo_asignatura }}</td>
+				<td>{{ e.anio }}</td>
+				<td>{{ e.periodo }}</td>
+				<td>{{ e.cupos_calculados }}</td>
+				<td>{{ e.fecha | date:'short' }}</td>
+			</tr>
+			<tr *ngIf="estimaciones.length === 0"><td colspan="5">No hay estimaciones registradas</td></tr>
+		</tbody>
+	</table>
+</div>

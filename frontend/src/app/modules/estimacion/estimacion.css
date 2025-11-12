@@ -1,0 +1,49 @@
+.wrap {
+    max-width: 1000px;
+    margin: 16px auto;
+    padding: 12px;
+    background: #fff;
+    border-radius: 6px
+}
+
+.panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 12px;
+    align-items: end
+}
+
+.panel label {
+    display: flex;
+    flex-direction: column
+}
+
+.actions {
+    display: flex;
+    gap: 8px
+}
+
+.resultado {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f6f9ff;
+    border-radius: 6px
+}
+
+.tbl {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px
+}
+
+.tbl th,
+.tbl td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee
+}
+
+@media (max-width:800px) {
+    .panel {
+        grid-template-columns: 1fr
+    }
+}

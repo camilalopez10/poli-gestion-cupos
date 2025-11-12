@@ -1,0 +1,147 @@
+/* Styles adapted from the original PHP project */
+:host {
+  /* Use flex layout so the sidebar (#menu-lateral) stretches to match main content height */
+  display: flex;
+  align-items: stretch;
+  min-height: 100vh;
+}
+
+body,
+:host {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#menu-lateral {
+  width: 220px;
+  flex: 0 0 220px;
+  background: #2E7D32;
+  color: white;
+  padding: 20px 10px;
+  /* ensure it stretches with the flex container */
+  align-self: stretch;
+}
+
+#menu-lateral img {
+  width: 100px;
+  display: block;
+  margin: 0 auto 20px;
+}
+
+#menu-lateral ul {
+  list-style: none;
+  padding: 0;
+}
+
+#menu-lateral li {
+  margin: 10px 0;
+}
+
+#menu-lateral a {
+  color: #fff;
+  text-decoration: none;
+  display: block;
+  padding: 8px 10px;
+  border-radius: 6px;
+  transition: background .3s;
+  cursor: pointer;
+}
+
+#menu-lateral a:hover,
+#menu-lateral li.active a {
+  background: #1B5E20;
+}
+
+main#main-content{
+  flex: 1 1 auto;
+  background:#ffffff;
+  padding:20px;
+}
+
+#header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tarjetas-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: center;
+}
+
+.module-card {
+  width: 240px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+  /* smooth transition for lift effect */
+  transition: transform 400ms ease, box-shadow 400ms ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* Lift effect on hover: translate upward and increase shadow */
+.module-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.14);
+  z-index: 2;
+}
+
+/* Subtle pressed state when clicking */
+.module-card:active {
+  transform: translateY(-2px);
+}
+
+.module-card .card-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+/* Ensure icons render and keep aspect ratio */
+.module-card .card-icon {
+  display: block;
+  object-fit: contain;
+  width: 80px;
+  height: 80px;
+}
+
+.module-card h3 {
+  margin: 4px 0;
+  color: #2E7D32;
+}
+
+.module-card p {
+  margin: 4px 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.module-card button.go-module {
+  margin-top: 12px;
+  background: #2E7D32;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.module-card button.go-module:hover {
+  background: #1B5E20;
+}
+
+/* Responsive */
+@media (max-width: 800px){
+  /* stack menu above content on small screens */
+  :host { flex-direction: column; }
+  #menu-lateral{ position:relative; width:100%; display:flex; }
+  main#main-content{ margin-left:0; }
+  .tarjetas-container{ justify-content:center; }
+}

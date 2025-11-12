@@ -1,0 +1,108 @@
+<div class="wrap">
+    <form (ngSubmit)="onSearch()" class="search-form">
+        <div class="row">
+            <label>
+                Código de asignatura
+                <input [(ngModel)]="query" name="query" placeholder="Código" />
+            </label>
+
+            <label>
+                Periodo
+                <select [(ngModel)]="periodo" name="periodo">
+                    <option value="">Todos</option>
+                    <option *ngFor="let p of periodOptions" [value]="p.value">{{ p.label }}</option>
+                </select>
+            </label>
+
+            <div class="actions">
+                <button type="submit">Buscar</button>
+                <button type="button" (click)="clear()">Limpiar</button>
+            </div>
+        </div>
+    </form>
+
+    <div *ngIf="loading">Cargando...</div>
+
+    <div *ngIf="!loading">
+        <!-- Charts shown only after a search -->
+        <div *ngIf="showCharts" class="charts">
+            <div class="pie">
+                <h3>Distribución Aprobados / Reprobados / Cancelaciones</h3>
+                <svg viewBox="0 0 200 200" width="300" height="300">
+                    <g transform="translate(100,100)">
+                        <ng-container *ngIf="pieData && pieData.length">
+                            <ng-container *ngFor="let slice of pieData; let i = index">
+                                <path [attr.d]="calcArcPath(i)" [attr.fill]="pieColor(i)" stroke="#fff"
+                                    stroke-width="1"></path>
+                                <text *ngIf="pieData && pieData.length" [attr.x]="calcArcLabelPos(i).x"
+                                    [attr.y]="calcArcLabelPos(i).y" text-anchor="middle" fill="#fff" font-size="10">{{
+                                    percentFor(i) }}</text>
+                            </ng-container>
+                        </ng-container>
+                    </g>
+                </svg>
+                <div class="legend" *ngIf="pieData && pieData.length">
+                    <div class="legend-item" *ngFor="let s of pieData; let i = index">
+                        <span class="swatch" [style.background]="pieColor(i)"></span>
+                        <span class="lbl">{{ s.label }}</span>
+                        <span class="pct">{{ percentFor(i) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bar">
+                <h3>Especiales / Transferencias / Reingresos / Atrasados</h3>
+                <svg viewBox="0 0 500 250" width="500" height="250">
+                    <g transform="translate(40,10)">
+                        <ng-container *ngIf="barData && barData.length">
+                            <ng-container *ngFor="let b of barData; let i = index">
+                                <rect [attr.x]="i*80" [attr.y]="calcBarY(b.value)" [attr.width]="40"
+                                    [attr.height]="calcBarH(b.value)" [attr.fill]="barColor(i)"></rect>
+                                <text [attr.x]="i*80+20" [attr.y]="230" text-anchor="middle">{{ b.label }}</text>
+                                <text [attr.x]="i*80+20" [attr.y]="calcBarY(b.value)-6" text-anchor="middle">{{ b.value
+                                    }}</text>
+                            </ng-container>
+                        </ng-container>
+                    </g>
+                </svg>
+            </div>
+        </div>
+
+        <h2>Tabla de resultados</h2>
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Año</th>
+                    <th>Periodo</th>
+                    <th>Matriculados</th>
+                    <th>Aprobados</th>
+                    <th>Reprobados</th>
+                    <th>Cancelaciones</th>
+                    <th>Reingresos</th>
+                    <th>Transf. Int.</th>
+                    <th>Transf. Ext.</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let r of filtered">
+                    <td>{{ r.codigo_asignatura }}</td>
+                    <td>{{ r.anio }}</td>
+                    <td>{{ r.periodo }}</td>
+                    <td>{{ r.matriculados }}</td>
+                    <td>{{ r.aprobados }}</td>
+                    <td>{{ r.reprobados }}</td>
+                    <td>{{ r.cancelaciones }}</td>
+                    <td>{{ r.reingresos }}</td>
+                    <td>{{ r.transferencia_interna }}</td>
+                    <td>{{ r.transferencia_externa }}</td>
+                </tr>
+                <tr *ngIf="filtered.length === 0">
+                    <td colspan="10">No hay resultados</td>
+                </tr>
+            </tbody>
+        </table>
+
+
+    </div>
+</div>

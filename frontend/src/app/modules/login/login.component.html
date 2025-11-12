@@ -1,0 +1,24 @@
+<!-- src/app/modules/login/login.html -->
+
+<div  class="body-login" >
+  <div class="login-container">
+    <img src="assets/img/logo-poli.jpg" alt="Escudo Poli">
+    <h2>SISTEMA DE GESTIÓN DE CUPOS, GRUPOS Y RECURSOS</h2>
+
+    <!-- Formulario con binding Angular -->
+    <form (ngSubmit)="login()" #loginForm="ngForm">
+      <input id="correo" type="text" [(ngModel)]="correo" name="correo" placeholder="Usuario o correo" required>
+
+      <input id="password" type="password" [(ngModel)]="password" name="password" placeholder="Contraseña" required>
+
+      <button type="submit" [disabled]="loginForm.invalid">Ingresar</button>
+      <button id="reset-btn" type="button" (click)="resetPassword()">Restablecer Contraseña</button>
+      <!-- Botón de depuración: abre la consola del navegador y haz click para comprobar logs -->
+    </form>
+
+    <div class="login-footer">
+      &copy; 2025 Politécnico JIC. Todos los derechos reservados.
+    </div>
+  </div>
+
+</div>

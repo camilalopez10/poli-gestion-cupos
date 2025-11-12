@@ -1,0 +1,90 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Global button styles: apply requested brand colors to all buttons */
+button,
+.btn,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+button[type="submit"],
+button[type="button"] {
+  background-color: #2E7D32;
+  color: white;
+  border-radius: 6px;
+  /* remove default browser border/outline and any grey border */
+  border: none;
+  box-shadow: none;
+  cursor: pointer;
+  padding: 8px 12px;
+}
+
+/* hover state: slightly darker green */
+button:hover,
+.btn:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+button[type="submit"]:hover,
+button[type="button"]:hover {
+  background-color: #27692a;
+}
+
+/* accessible focus ring: remove default outline but show a subtle ring */
+button:focus,
+button:focus-visible,
+.btn:focus,
+.btn:focus-visible,
+input[type="button"]:focus,
+input[type="submit"]:focus,
+input[type="reset"]:focus,
+button[type="submit"]:focus,
+button[type="button"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.18);
+}
+
+/* Global table header styling to match brand */
+table th,
+table thead th {
+  background-color: #2E7D32 !important;
+  color: white !important;
+  text-align: left;
+}
+
+/* Global form control styles (apply same input/select look across the app) */
+input,
+select,
+textarea {
+  padding: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 6px 0;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+}
+
+/* Dropdown option hover/selected styling (browser support varies) */
+select {
+  background: #fff;
+  color: #222;
+}
+select option {
+  background: #fff;
+  color: #222;
+}
+/* Attempt to match option hover/selected to brand color - note: some browsers ignore option styling */
+select option:hover,
+select option:focus,
+select option:checked {
+  background-color: #2E7D32;
+  color: white;
+}
+
+/* Also style the select when focused to hint the brand */
+select:focus {
+  box-shadow: 0 0 0 3px rgba(46,125,50,0.12);
+  border-color: #2E7D32;
+}

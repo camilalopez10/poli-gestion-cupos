@@ -1,0 +1,105 @@
+
+<div class="usuarios-container">
+	<h2>Gestión de usuarios</h2>
+
+	<div class="usuario-form">
+		<label>
+			Nombre completo
+			<input [(ngModel)]="nombre" placeholder="Nombre completo" />
+		</label>
+
+		<label>
+			Correo
+			<input [(ngModel)]="correo" placeholder="correo@dominio" />
+		</label>
+
+		<label>
+			Contraseña
+			<input [(ngModel)]="password" type="password" placeholder="Contraseña" />
+		</label>
+
+		<label>
+			Rol
+			<select [(ngModel)]="rol" required>
+				<option value="admin">Administrador</option>
+				<option value="coordinador">Coordinador académico</option>
+				<option value="docente">Docente académico</option>
+			</select>
+		</label>
+
+		<div class="form-actions">
+			<button (click)="crearUsuario()" *ngIf="!editingId" [disabled]="!nombre || !correo || !password||!rol || isCreating">Crear usuario <span *ngIf="isCreating" class="spinner" aria-hidden></span></button>
+			<button (click)="resetForm()" *ngIf="!editingId">Limpiar</button>
+
+			<button (click)="acceptEdit()" *ngIf="editingId">Aceptar</button>
+			<button (click)="cancelEdit()" *ngIf="editingId">Cancelar</button>
+		</div>
+	</div>
+
+	<div class="usuarios-list">
+		<h3>Lista de usuarios</h3>
+		<div *ngIf="loading">Cargando...</div>
+		<table *ngIf="!loading">
+			<thead>
+				<tr>
+					<th>Nombre</th>
+					<th>Correo</th>
+					<th>Contraseña</th>
+					<th>Rol</th>
+					<th>Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let u of usuarios; let i = index">
+					<td>
+						<ng-container *ngIf="editingId !== (u.id || u.id_usuario).toString(); else editNombre">{{ u.nombre }}</ng-container>
+						<ng-template #editNombre>
+							<input [(ngModel)]="editModel.nombre" />
+						</ng-template>
+					</td>
+					<td>
+						<ng-container *ngIf="editingId !== (u.id || u.id_usuario).toString(); else editCorreo">{{ u.correo }}</ng-container>
+						<ng-template #editCorreo>
+							<input [(ngModel)]="editModel.correo" />
+						</ng-template>
+					</td>
+					<td>
+						<ng-container *ngIf="editingId !== (u.id || u.id_usuario).toString(); else editPass">
+							<ng-container *ngIf="u.password; else noPass">{{ u.password }}</ng-container>
+						</ng-container>
+						<ng-template #editPass>
+							<input type="password" [(ngModel)]="editModel.password" placeholder="Nueva contraseña" />
+						</ng-template>
+						<ng-template #noPass>-</ng-template>
+					</td>
+					<td>
+						<ng-container *ngIf="editingId !== (u.id || u.id_usuario).toString(); else editRol">{{ u.rol || u.tipo }}</ng-container>
+						<ng-template #editRol>
+							<select [(ngModel)]="editModel.rol">
+								<option value="admin">Administrador</option>
+								<option value="coordinador">Coordinador académico</option>
+								<option value="docente">Docente académico</option>
+							</select>
+						</ng-template>
+					</td>
+					<td class="actions">
+						<ng-container *ngIf="editingId !== (u.id || u.id_usuario).toString(); else editActions">
+							<button (click)="startEdit(u, i)" [disabled]="isSaving">Editar</button>
+							<button (click)="eliminarUsuario((u.id || u.id_usuario).toString())" [disabled]="isSaving">Eliminar</button>
+						</ng-container>
+						<ng-template #editActions>
+							<button (click)="acceptEdit()" [disabled]="isSaving">Aceptar <span *ngIf="isSaving" class="spinner large" aria-hidden></span></button>
+							<button (click)="cancelEdit()" [disabled]="isSaving">Cancelar</button>
+						</ng-template>
+					</td>
+				</tr>
+				<tr *ngIf="usuarios.length === 0">
+					<td colspan="5">No hay usuarios</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="toast" *ngIf="toastMessage">{{ toastMessage }}</div>
+

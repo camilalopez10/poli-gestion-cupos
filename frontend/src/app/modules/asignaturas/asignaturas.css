@@ -1,0 +1,78 @@
+/* Styles adapted from the provided template */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f6f4;
+    color: #222;
+    padding: 18px;
+}
+
+.wrap {
+    max-width: 1100px;
+    margin: 0 auto
+}
+
+h1 {
+    color: #1b6b2f
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04)
+}
+
+th,
+td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left
+}
+
+th {
+    background: #f7f7f7
+}
+
+.btn {
+    display: inline-block;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #fff;
+    background: #1b6b2f;
+    border-color: #1b6b2f;
+}
+
+.muted {
+    background: #777;
+    border-color: #777;
+}
+
+form {
+    margin: 12px 0;
+    padding: 12px;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03)
+}
+
+/* form controls styled globally in src/styles.css */
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px
+}
+
+.preview {
+    background: #fff;
+    padding: 12px;
+    margin-top: 12px;
+    border-radius: 6px
+}
+
+/* small responsive */
+@media (max-width:700px) {
+    .grid {
+        grid-template-columns: 1fr
+    }
+}

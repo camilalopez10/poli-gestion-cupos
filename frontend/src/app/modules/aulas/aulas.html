@@ -1,0 +1,70 @@
+<div class="wrap">
+  <h1>Gestión de Aulas</h1>
+
+  <form (ngSubmit)="onSearch()">
+    <div class="grid">
+      <div>
+        <label for="nombre">Nombre</label>
+        <input id="nombre" name="nombre" [(ngModel)]="nombre" />
+      </div>
+      <div style="align-self:end">
+        <button class="btn" type="submit">Buscar</button>
+      </div>
+    </div>
+  </form>
+
+  <table style="margin-top:12px; width:100%">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Capacidad</th>
+        <th>Ubicación</th>
+        <th>Tipo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let a of items">
+        <td>
+          <ng-container *ngIf="editingId !== (a.id || a.id_aula).toString(); else editNombre">{{ a.nombre }}</ng-container>
+          <ng-template #editNombre>
+            <input [(ngModel)]="editModel.nombre" />
+          </ng-template>
+        </td>
+        <td>
+          <ng-container *ngIf="editingId !== (a.id || a.id_aula).toString(); else editCap">{{ a.capacidad }}</ng-container>
+          <ng-template #editCap>
+            <input type="number" [(ngModel)]="editModel.capacidad" />
+          </ng-template>
+        </td>
+        <td>
+          <ng-container *ngIf="editingId !== (a.id || a.id_aula).toString(); else editUb">{{ a.ubicacion }}</ng-container>
+          <ng-template #editUb>
+            <input [(ngModel)]="editModel.ubicacion" />
+          </ng-template>
+        </td>
+        <td>
+          <ng-container *ngIf="editingId !== (a.id || a.id_aula).toString(); else editTipo">{{ a.tipo }}</ng-container>
+          <ng-template #editTipo>
+            <input [(ngModel)]="editModel.tipo" />
+          </ng-template>
+        </td>
+        <td>
+          <ng-container *ngIf="editingId !== (a.id || a.id_aula).toString(); else editActions">
+            <button (click)="startEdit(a)">Editar</button>
+            <button (click)="eliminar((a.id || a.id_aula).toString())">Eliminar</button>
+          </ng-container>
+          <ng-template #editActions>
+            <button (click)="acceptEdit()" [disabled]="isSaving">Aceptar <span *ngIf="isSaving" class="spinner" aria-hidden></span></button>
+            <button (click)="cancelEdit()">Cancelar</button>
+          </ng-template>
+        </td>
+      </tr>
+      <tr *ngIf="items.length === 0">
+        <td colspan="5">No hay aulas</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="toast" *ngIf="toastMessage">{{ toastMessage }}</div>

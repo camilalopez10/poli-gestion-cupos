@@ -93,7 +93,7 @@ export const loginUsuario = async (req, res) => {
       //token,
     });
   } catch (error) {
-    console.error("Error en loginUsuario:", error);
+    console.error("Eerror en loginUsuario:", error);
     res.status(500).json({ message: "Error en el servidor", error: error.message });
   }
 };

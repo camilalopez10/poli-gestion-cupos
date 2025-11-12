@@ -1,0 +1,89 @@
+.wrap {
+    max-width: 1100px;
+    margin: 16px auto;
+    padding: 12px;
+    background: #fff;
+    border-radius: 6px
+}
+
+.search-form .row {
+    display: flex;
+    gap: 12px;
+    align-items: end
+}
+
+.search-form label {
+    display: flex;
+    flex-direction: column;
+}
+
+.tbl {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px
+}
+
+.tbl th,
+.tbl td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+    text-align: left
+}
+
+.charts {
+    display: flex;
+    gap: 24px;
+    margin-top: 18px
+}
+
+.pie,
+.bar {
+    background: #fafafa;
+    padding: 12px;
+    border-radius: 6px
+}
+
+.pie .legend {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap
+}
+
+.pie .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    padding: 4px 6px;
+    border-radius: 4px
+}
+
+.pie .legend-item .swatch {
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.08)
+}
+
+.pie .legend-item .lbl {
+    font-size: 13px;
+    color: #333
+}
+
+.pie .legend-item .pct {
+    font-size: 12px;
+    color: #666;
+    margin-left: 4px
+}
+
+@media (max-width:800px) {
+    .search-form .row {
+        flex-direction: column
+    }
+
+    .charts {
+        flex-direction: column
+    }
+}
