@@ -28,7 +28,7 @@ export class AsignaturasComponent implements OnInit {
   // records that will be inserted on confirm (computed from parsed preview)
   recordsToInsert: Array<{ codigo: string; nombre: string; creditos?: string; nivel?: string }> = [];
 
-  constructor(private svc: AsignaturasService) {}
+  constructor(private svc: AsignaturasService) { }
 
   ngOnInit(): void {
     this.fetchAsignaturas();
@@ -53,31 +53,6 @@ export class AsignaturasComponent implements OnInit {
     const f = ev?.target?.files?.[0];
     if (!f) return;
     this.file = f;
-  }
-  onDelete(codigo: string) {
-    if (!codigo) return;
-    if (!confirm('¿Confirmar eliminación de asignatura?')) return;
-    // Optimistic UI update: remove locally first for immediate feedback
-    const prevItems = [...this.items];
-    this.items = this.items.filter(i => ('' + (i.codigo || i.id || '')).trim() !== ('' + codigo).trim());
-
-    this.svc.delete(codigo).subscribe({
-      next: (res: any) => {
-        if (res && (res.message === 'Registro eliminado exitosamente' || res.success || res.ok || res === true)) {
-          // successful, nothing to do (already removed)
-        } else {
-          // server responded but indicates failure — revert UI and show message
-          this.items = prevItems;
-          alert('Error eliminando asignatura: ' + (res?.message || 'Respuesta inesperada del servidor'));
-        }
-      },
-      error: (err) => {
-        console.error('Error deleting asignatura', err);
-        // revert optimistic change
-        this.items = prevItems;
-        alert('Error eliminando asignatura');
-      }
-    });
   }
 
   async onPreview() {
@@ -122,23 +97,26 @@ export class AsignaturasComponent implements OnInit {
       return -1;
     };
 
-    const idxCodigo = findIdx(['codigo', 'cod']);
-    const idxNombre = findIdx(['asignatura', 'nombre', 'materia']);
-    const idxCred = findIdx(['credit', 'crédit', 'cr']);
-    const idxNivel = findIdx(['nivel']);
+    const idxCodigo = findIdx(['CÓDIGO', 'cod']);
+    const idxNombre = findIdx(['ASIGNATURA', 'nombre', 'materia']);
+    const idxCred = findIdx(['CRÉDITOS', 'crédit', 'cr']);
+    const idxNivel = findIdx(['NIVEL']);
 
     const records: Array<{ codigo: string; nombre: string; creditos?: string; nivel?: string }> = [];
+    console.log('Rows count:', rows.length);
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i] || [];
+      console.log('Processing row', i, row);
       if (!row || row.every((c: any) => c === undefined || ('' + c).trim() === '')) continue;
       const first = ('' + (row[0] || '')).trim();
       if (/prerequisito/i.test(first) || /prerequisitos/i.test(first)) continue;
 
-      const codigo = idxCodigo !== -1 ? ('' + (row[idxCodigo] || '')).trim() : ('' + (row[0] || '')).trim();
-      const nombre = idxNombre !== -1 ? ('' + (row[idxNombre] || '')).trim() : ('' + (row[1] || '')).trim();
-      const creditos = idxCred !== -1 ? ('' + (row[idxCred] || '')).trim() : '';
-      const nivel = idxNivel !== -1 ? ('' + (row[idxNivel] || '')).trim() : '';
-
+      const codigo = ('' + (row[1] || '')).trim();
+      const nombre = ('' + (row[2] || '')).trim();
+      const creditos = ('' + (row[6] || '')).trim();;
+      const nivel = ('' + (row[4] || '')).trim();;
+      console.log('Parsed record', { codigo, nombre, creditos, nivel });
+      if (codigo === "CÓDIGO" || nombre === "ASIGNATURA") continue;
       if (!codigo || !nombre) continue;
       records.push({ codigo, nombre, creditos, nivel });
     }
@@ -156,88 +134,58 @@ export class AsignaturasComponent implements OnInit {
     this.activeSheetIndex = i;
     const sheet = this.parsedSheets[i];
     this.preview = { header: sheet?.rows[0] || [], rows: sheet?.rows.slice(1) || [] };
+    // Recompute which records would be inserted for the newly selected sheet
+    this.recordsToInsert = this.computeRecordsFromPreview(this.preview);
   }
 
   async onConfirmImport() {
     if (!this.file) { alert('Selecciona un archivo CSV o XLSX'); return; }
     if (!confirm('Confirmar importación?')) return;
 
-    // If we have a client-side parsed preview, use it to extract rows and create asignaturas
+    // If we have a client-side parsed preview, build the records array from the active sheet,
+    // remove duplicates, and send as bulk to createAsignaturas endpoint.
     if (this.parsedSheets && this.parsedSheets.length > 0) {
       try {
-        const sheet = this.parsedSheets[this.activeSheetIndex] || this.parsedSheets[0];
-        const rows = sheet?.rows || [];
-        
-        // find header row index by detecting a cell that contains 'codigo' (case-insensitive)
-        const headerIndex = rows.findIndex((r: any[]) => Array.isArray(r) && r.some(c => ('' + (c || '')).toLowerCase().includes('codigo')));
-        if (headerIndex === -1) {
-          // fallback to server upload if we can't detect header
-          const res: any = await firstValueFrom(this.svc.importConfirm(this.file));
-          if (!res.success) { alert('Error importando: ' + (res.message || '')); return; }
-          this.importedList = res.inserted || [];
-          alert('Importación completada. Filas insertadas: ' + this.importedList.length);
-          this.previewVisible = false;
-          this.file = undefined;
-          this.fetchAsignaturas();
-          return;
+        // collect records from all parsed sheets
+        const records: Array<any> = [];
+        for (const sheet of this.parsedSheets) {
+          const preview = { header: sheet?.rows[0] || [], rows: sheet?.rows?.slice(1) || [] };
+          const recs = this.computeRecordsFromPreview(preview);
+          if (Array.isArray(recs) && recs.length) records.push(...recs);
         }
 
-        const headerRow: string[] = (rows[headerIndex] || []).map((h: any) => ('' + (h || '')).normalize('NFD').replace(/\p{M}/gu, '').toLowerCase());
-        const findIdx = (keys: string[]) => {
-          for (let i = 0; i < headerRow.length; i++) {
-            const h = headerRow[i];
-            if (!h) continue;
-            for (const k of keys) if (h.includes(k)) return i;
-          }
-          return -1;
-        };
+        // remove duplicates by codigo (keep first occurrence)
+        const seen = new Set<string>();
+        const uniqueRecords = records.filter(r => {
+          const key = (r.codigo || '').toString().trim();
+          if (!key) return false;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        console.log('Unique records to insert', uniqueRecords);
 
-        const idxCodigo = findIdx(['codigo', 'cod']);
-        const idxNombre = findIdx(['asignatura', 'nombre', 'materia']);
-        const idxCred = findIdx(['credit', 'crédit', 'cr']);
-        const idxNivel = findIdx(['nivel']);
+        if (uniqueRecords.length === 0) { alert('No se detectaron registros válidos para insertar.'); return; }
 
-        const records: Array<{ codigo: string; nombre: string; creditos?: string; nivel?: string }> = [];
-
-        for (let i = headerIndex + 1; i < rows.length; i++) {
-          const row = rows[i] || [];
-          // skip empty rows
-          if (!row || row.every((c: any) => c === undefined || ('' + c).trim() === '')) continue;
-          const first = ('' + (row[0] || '')).trim();
-          // skip PREREQUISITOS blocks or similar section headers
-          if (/prerequisito/i.test(first) || /prerequisitos/i.test(first)) continue;
-
-          const codigo = idxCodigo !== -1 ? ('' + (row[idxCodigo] || '')).trim() : ('' + (row[0] || '')).trim();
-          const nombre = idxNombre !== -1 ? ('' + (row[idxNombre] || '')).trim() : ('' + (row[1] || '')).trim();
-          const creditos = idxCred !== -1 ? ('' + (row[idxCred] || '')).trim() : '';
-          const nivel = idxNivel !== -1 ? ('' + (row[idxNivel] || '')).trim() : '';
-
-          if (!codigo || !nombre) continue;
-          records.push({ codigo, nombre, creditos, nivel });
+        // send bulk create
+        const res: any = await firstValueFrom(this.svc.createBulk(uniqueRecords));
+        if (res.error?.message === 'Error: código duplicado') {
+          alert('Error: código duplicado'); return;
         }
-
-        // create records sequentially to avoid overloading backend
-        const inserted: Array<any> = [];
-        for (const rec of records) {
-          try {
-            const res: any = await firstValueFrom(this.svc.create(rec.codigo, rec.nombre));
-            if (res && (res.success || res.ok)) inserted.push(rec);
-          } catch (e) {
-            console.error('Error creating asignatura', rec, e);
-          }
-        }
-
-        this.importedList = inserted;
-        alert('Importación completada. Filas insertadas: ' + inserted.length);
+        if (!(res.message === 'Asignaturas creadas exitosamente')) { alert('Error importando: ' + (res?.message || 'Respuesta inesperada del servidor')); return; }
+        this.importedList = res.inserted || uniqueRecords;
+        alert('Importación completada. Filas insertadas: ' + this.importedList.length);
         this.previewVisible = false;
         this.file = undefined;
         this.parsedSheets = [];
         await this.fetchAsignaturas();
         return;
-      } catch (e) {
-        console.error(e);
+      } catch (e: any) {
+        if (e.error.message.includes('código duplicado')) {
+          alert('Error: código duplicado'); return;
+        }
         alert('Error al procesar importación en cliente, intentando en servidor');
-        // fallthrough to server fallback
+        // fallthrough to fallback below
       }
     }
 

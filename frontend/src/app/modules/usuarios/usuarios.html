@@ -11,6 +11,7 @@
 		<label>
 			Correo
 			<input [(ngModel)]="correo" placeholder="correo@dominio" />
+			<div class="field-error" *ngIf="correo && !correoIsValid()">El correo debe terminar en @elpoli.edu.co</div>
 		</label>
 
 		<label>
@@ -25,13 +26,15 @@
 				<option value="coordinador">Coordinador académico</option>
 				<option value="docente">Docente académico</option>
 			</select>
+
 		</label>
 
 		<div class="form-actions">
-			<button (click)="crearUsuario()" *ngIf="!editingId" [disabled]="!nombre || !correo || !password||!rol || isCreating">Crear usuario <span *ngIf="isCreating" class="spinner" aria-hidden></span></button>
+
+			<button (click)="crearUsuario()" *ngIf="!editingId" [disabled]="!nombre || !correo || !password || !rol || isCreating || !correoIsValid()">Crear usuario <span *ngIf="isCreating" class="spinner" aria-hidden></span></button>
 			<button (click)="resetForm()" *ngIf="!editingId">Limpiar</button>
 
-			<button (click)="acceptEdit()" *ngIf="editingId">Aceptar</button>
+			<button (click)="acceptEdit()" *ngIf="editingId" [disabled]="isSaving || !nombre || !correo || !correoIsValid()">Aceptar</button>
 			<button (click)="cancelEdit()" *ngIf="editingId">Cancelar</button>
 		</div>
 	</div>
@@ -88,7 +91,7 @@
 							<button (click)="eliminarUsuario((u.id || u.id_usuario).toString())" [disabled]="isSaving">Eliminar</button>
 						</ng-container>
 						<ng-template #editActions>
-							<button (click)="acceptEdit()" [disabled]="isSaving">Aceptar <span *ngIf="isSaving" class="spinner large" aria-hidden></span></button>
+							<button (click)="acceptEdit()" [disabled]="isSaving || !editModel.nombre || !editModel.correo || !correoIsValid(editModel.correo)">Aceptar <span *ngIf="isSaving" class="spinner large" aria-hidden></span></button>
 							<button (click)="cancelEdit()" [disabled]="isSaving">Cancelar</button>
 						</ng-template>
 					</td>
@@ -99,7 +102,8 @@
 			</tbody>
 		</table>
 	</div>
+<div class="toast" *ngIf="toastMessage">{{ toastMessage }}</div>
+
 </div>
 
-<div class="toast" *ngIf="toastMessage">{{ toastMessage }}</div>
 

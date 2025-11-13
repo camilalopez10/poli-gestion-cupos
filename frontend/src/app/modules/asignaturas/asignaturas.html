@@ -20,25 +20,26 @@
 
   <div style="margin-top:18px;padding:12px;background:#fff;border-radius:6px">
     <h3>Importar Asignaturas (CSV / XLSX)</h3>
-    <input type="file" id="filecsv" (change)="onFileChange($event)" accept=".csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
-    <button id="btnPreview" class="btn muted" style="background:#2d7a3a;margin-left:8px" (click)="onPreview()">Vista previa</button>
+    <input type="file" id="filecsv" (change)="onFileChange($event)"
+      accept=".csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+    <button id="btnPreview" class="btn muted" style="background:#2d7a3a;margin-left:8px" (click)="onPreview()">Vista
+      previa</button>
     <div id="preview" class="preview" *ngIf="previewVisible">
-  <div *ngIf="parsedSheets.length > 1" style="margin-bottom:8px">
-        <span *ngFor="let s of parsedSheets; let i = index" (click)="selectSheet(i)" [style.fontWeight]="i===activeSheetIndex? '700':'400'" style="cursor:pointer;padding:6px 10px;border-radius:4px;margin-right:6px;background:#f3f3f3">{{ s.name || ('Hoja ' + (i+1)) }}</span>
+      <div *ngIf="parsedSheets.length > 1" style="margin-bottom:8px">
+        <span *ngFor="let s of parsedSheets; let i = index" (click)="selectSheet(i)"
+          [style.fontWeight]="i===activeSheetIndex? '700':'400'"
+          style="cursor:pointer;padding:6px 10px;border-radius:4px;margin-right:6px;background:#f3f3f3">{{ s.name ||
+          ('Hoja ' + (i+1)) }}</span>
       </div>
-      <h4>Vista previa de archivo</h4>
-      <div><strong>Columnas detectadas:</strong> {{ preview?.header?.join(', ') }}</div>
-      <div style="margin-top:8px">
-        <strong>Primeras filas:</strong>
-        <ul>
-          <li *ngFor="let row of (preview?.rows || []) | slice:0:10">{{ $any(row).join(' | ') }}</li>
-        </ul>
-      </div>
-
       <h4 style="margin-top:12px">Registros detectados para insertar</h4>
       <table class="tbl">
         <thead>
-          <tr><th>CÓDIGO</th><th>ASIGNATURA</th><th>CRÉDITOS</th><th>NIVEL</th></tr>
+          <tr>
+            <th>CÓDIGO</th>
+            <th>ASIGNATURA</th>
+            <th>CRÉDITOS</th>
+            <th>NIVEL</th>
+          </tr>
         </thead>
         <tbody>
           <tr *ngFor="let r of recordsToInsert | slice:0:200">
@@ -47,26 +48,36 @@
             <td>{{ r.creditos }}</td>
             <td>{{ r.nivel }}</td>
           </tr>
-          <tr *ngIf="recordsToInsert.length === 0"><td colspan="4">No se detectaron registros válidos para insertar.</td></tr>
+          <tr *ngIf="recordsToInsert.length === 0">
+            <td colspan="4">No se detectaron registros válidos para insertar.</td>
+          </tr>
         </tbody>
       </table>
 
       <div style="margin-top:8px">
-        <button class="btn" (click)="onConfirmImport()" [disabled]="recordsToInsert.length===0">Confirmar importación</button>
-        <button class="btn muted" style="margin-left:8px;background:#777;border-color:#777" (click)="cancelPreview()">Cancelar</button>
+        <button class="btn" (click)="onConfirmImport()" [disabled]="recordsToInsert.length===0">Confirmar
+          importación de todas las asignaturas</button>
+        <button class="btn muted" style="margin-left:8px;background:#777;border-color:#777"
+          (click)="cancelPreview()">Cancelar</button>
       </div>
     </div>
   </div>
 
   <table id="tbl" style="margin-top:12px">
-    <thead><tr><th>Código</th><th>Nombre</th><th>Créditos</th><th>Nivel</th><th>Acciones</th></tr></thead>
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Nombre</th>
+        <th>Créditos</th>
+        <th>Nivel</th>
+      </tr>
+    </thead>
     <tbody>
       <tr *ngFor="let a of items">
         <td>{{ a.codigo || '' }}</td>
         <td>{{ a.nombre || '' }}</td>
         <td>{{ a.creditos || '' }}</td>
         <td>{{ a.nivel || '' }}</td>
-        <td><button (click)="onDelete(a.codigo)">Eliminar</button></td>
       </tr>
     </tbody>
   </table>

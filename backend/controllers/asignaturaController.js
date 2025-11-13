@@ -59,6 +59,76 @@ export const createAsignatura = async (req, res) => {
   }
 };
 
+// Crear varias asignaturas en lote
+export const createAsignaturas = async (req, res) => {
+  console.log("createAsignaturas called with body:", req.body);
+  try {
+    const items = req.body.records;
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: "Se requiere un arreglo de asignaturas" });
+    }
+
+    const errors = [];
+    const values = [];
+
+    items.forEach((it, idx) => {
+      const { codigo, nombre, creditos, nivel } = it || {};
+      if (!codigo || !nombre || creditos === undefined || creditos === null) {
+        errors.push({ index: idx, message: 'codigo, nombre y creditos son obligatorios' });
+        return;
+      }
+      var creds = parseInt(creditos, 10);
+      if (Number.isNaN(creds)) {
+        creds = 0;
+      }
+      if (creds < 0) {
+        errors.push({ index: idx, message: 'creditos debe ser un entero no negativo' });
+        return;
+      }
+      if (nivel !== undefined && nivel !== null && typeof nivel !== 'string') {
+        errors.push({ index: idx, message: 'nivel debe ser una cadena si se proporciona' });
+        return;
+      }
+
+      values.push([codigo, nombre, creds, nivel ?? null]);
+    });
+
+    if (errors.length > 0) {
+      return res.status(400).json({ message: 'Errores en los datos de entrada', errors });
+    }
+
+    // Usar transacción para inserción en lote
+    const conn = await db.getConnection();
+    try {
+      await conn.beginTransaction();
+      const [result] = await conn.query(
+        'INSERT INTO asignaturas (codigo, nombre, creditos, nivel) VALUES ?',
+        [values]
+      );
+      await conn.commit();
+
+      return res.status(201).json({
+        message: 'Asignaturas creadas exitosamente',
+        insertedCount: result.affectedRows,
+        firstInsertId: result.insertId,
+      });
+    } catch (error) {
+      await conn.rollback();
+      console.error('Error al insertar asignaturas en lote:', error);
+      if (error && error.code === 'ER_DUP_ENTRY') {
+        return res.status(409).json({ message: 'Error: código duplicado', error: error.message });
+      }
+      return res.status(500).json({ message: 'Error al insertar asignaturas', error: error.message });
+    } finally {
+      conn.release();
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 // Actualizar una asignatura (soporta updates parciales)
 export const updateAsignatura = async (req, res) => {
   try {

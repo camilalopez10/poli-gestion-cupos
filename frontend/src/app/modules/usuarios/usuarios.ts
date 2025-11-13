@@ -33,6 +33,9 @@ export class UsuariosComponent implements OnInit {
   private toastTimer: any = null;
   isSaving = false;
 
+  // allow only elpoli.edu.co emails
+  private correoPattern = /^[^\s@]+@elpoli\.edu\.co$/i;
+
   constructor(private usuariosSrv: UsuariosService, private loadingSvc: LoadingService) { }
 
   ngOnInit(): void {
@@ -69,6 +72,10 @@ export class UsuariosComponent implements OnInit {
       alert('Por favor complete nombre y correo');
       return;
     }
+    if (!this.correoIsValid()) {
+      alert('El correo debe terminar en @elpoli.edu.co');
+      return;
+    }
     try {
       this.isCreating = true;
       if (this.loadingSvc) this.loadingSvc.show();
@@ -89,13 +96,23 @@ export class UsuariosComponent implements OnInit {
         this.resetForm();
         if (res && res.message) this.showToast(res.message);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error creating usuario', err);
-      this.showToast('Error creando usuario');
+      if (this.isDuplicateEmailError(err)) {
+        this.showToast('Ya existe una cuenta con ese correo');
+      } else {
+        const msg = err?.error?.message || err?.message || 'Error creando usuario';
+        this.showToast(msg);
+      }
     } finally {
       this.isCreating = false;
       if (this.loadingSvc) this.loadingSvc.hide();
     }
+  }
+
+  correoIsValid(email?: string) {
+    const e = (email ?? this.correo ?? '').toString().trim();
+    return this.correoPattern.test(e);
   }
 
   showToast(msg: string, ms = 3000) {
@@ -119,6 +136,14 @@ export class UsuariosComponent implements OnInit {
 
   async acceptEdit() {
     if (!this.editingId) return;
+    if (!this.editModel.nombre || !this.editModel.correo) {
+      alert('Por favor complete nombre y correo');
+      return;
+    }
+    if (!this.correoIsValid(this.editModel.correo)) {
+      alert('El correo debe terminar en @elpoli.edu.co');
+      return;
+    }
     try {
       this.isSaving = true;
       const payload: any = { nombre: this.editModel.nombre, correo: this.editModel.correo, rol: this.editModel.rol };
@@ -142,9 +167,14 @@ export class UsuariosComponent implements OnInit {
         if (res && res.message) this.showToast(res.message);
         this.cancelEdit();
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error updating usuario', err);
-      this.showToast('Error actualizando usuario');
+      if (this.isDuplicateEmailError(err)) {
+        this.showToast('Ya existe una cuenta con ese correo');
+      } else {
+        const msg = err?.error?.message || err?.message || 'Error actualizando usuario';
+        this.showToast(msg);
+      }
     } finally {
       this.isSaving = false;
       if (this.loadingSvc) this.loadingSvc.hide();
@@ -174,5 +204,17 @@ export class UsuariosComponent implements OnInit {
         timeoutId = setTimeout(() => rej(new Error('timeout')), ms);
       }),
     ]).finally(() => clearTimeout(timeoutId));
+  }
+
+  // Detect duplicate-email errors from backend responses
+  private isDuplicateEmailError(err: any): boolean {
+    try {
+      const payload = err?.error ?? err;
+      const text = (payload?.error || payload?.message || err?.message || '').toString();
+      // common MySQL duplicate error format contains "Duplicate entry" and the key name
+      return /duplicate entry/i.test(text) && /correo|usuarios\.correo/i.test(text);
+    } catch (e) {
+      return false;
+    }
   }
 }
