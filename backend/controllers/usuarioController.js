@@ -42,8 +42,8 @@ export const createUsuario = async (req, res) => {
         .json({ message: "Los campos nombre, correo y password son obligatorios" });
     }
 
-  // Nota: NO se encripta la contraseña (almacenamiento en texto plano según solicitud)
-  // Guardamos la contraseña tal cual en `data.password`
+    // Nota: NO se encripta la contraseña (almacenamiento en texto plano según solicitud)
+    // Guardamos la contraseña tal cual en `data.password`
 
     const query = "INSERT INTO usuarios (nombre, correo, password, rol) VALUES (?, ?, ?, ?)";
     const values = [data.nombre, data.correo, data.password, data.rol || "docente"];
