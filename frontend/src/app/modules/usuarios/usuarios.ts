@@ -73,7 +73,7 @@ export class UsuariosComponent implements OnInit {
       this.isCreating = true;
       if (this.loadingSvc) this.loadingSvc.show();
       // intentionally not sending password in payload for now
-      const payload = { nombre: this.nombre, correo: this.correo, rol: this.rol };
+      const payload = { nombre: this.nombre, correo: this.correo, rol: this.rol, password: this.password };
       console.debug('[Usuarios] crearUsuario: payload=', payload);
       const res: any = await this.callWithTimeout(firstValueFrom(this.usuariosSrv.create(payload)), 15000);
       console.debug('[Usuarios] crearUsuario: response=', res);

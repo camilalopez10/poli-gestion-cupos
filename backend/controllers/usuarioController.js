@@ -33,6 +33,7 @@ export const getUsuario = async (req, res) => {
 
 // Crear un usuario
 export const createUsuario = async (req, res) => {
+  console.log("createUsuario called with body:", req.body);
   try {
     const data = req.body;
 
