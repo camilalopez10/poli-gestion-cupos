@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, NgIf, NgForOf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HistoricoService } from '../../services/historico';
+import { HistoricoService } from '../../services/historico-service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({

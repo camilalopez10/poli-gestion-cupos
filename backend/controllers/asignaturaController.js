@@ -33,7 +33,7 @@ export const getAsignatura = async (req, res) => {
 // Crear una asignatura
 export const createAsignatura = async (req, res) => {
   try {
-    const { codigo, nombre, creditos } = req.body;
+    const { codigo, nombre, creditos, nivel, prerequisito } = req.body;
 
     if (!codigo || !nombre || creditos === undefined || creditos === null) {
       return res.status(400).json({ message: "Los campos codigo, nombre y creditos son obligatorios" });
@@ -44,14 +44,14 @@ export const createAsignatura = async (req, res) => {
       return res.status(400).json({ message: "creditos debe ser un número entero no negativo" });
     }
 
-    const query = "INSERT INTO asignaturas (codigo, nombre, creditos) VALUES (?, ?, ?)";
-    const values = [codigo, nombre, creds];
+  const query = "INSERT INTO asignaturas (codigo, nombre, creditos, nivel, prerequisito) VALUES (?, ?, ?, ?, ?)";
+  const values = [codigo, nombre, creds, nivel ?? null, prerequisito ?? null];
 
     const [result] = await db.query(query, values);
 
     res.status(201).json({
       message: "Asignatura creada exitosamente",
-      asignatura: { id: result.insertId, codigo, nombre, creditos: creds },
+      asignatura: { id: result.insertId, codigo, nombre, creditos: creds, nivel: nivel ?? null, prerequisito: prerequisito ?? null },
     });
   } catch (error) {
     console.error("Error al crear asignatura:", error);
@@ -73,7 +73,7 @@ export const createAsignaturas = async (req, res) => {
     const values = [];
 
     items.forEach((it, idx) => {
-      const { codigo, nombre, creditos, nivel } = it || {};
+      const { codigo, nombre, creditos, nivel, prerequisito } = it || {};
       if (!codigo || !nombre || creditos === undefined || creditos === null) {
         errors.push({ index: idx, message: 'codigo, nombre y creditos son obligatorios' });
         return;
@@ -90,8 +90,12 @@ export const createAsignaturas = async (req, res) => {
         errors.push({ index: idx, message: 'nivel debe ser una cadena si se proporciona' });
         return;
       }
+      // if (prerequisito !== undefined && prerequisito !== null && typeof prerequisito !== 'string') {
+      //   errors.push({ index: idx, message: 'prerequisito debe ser una cadena si se proporciona' });
+      //   return;
+      // }
 
-      values.push([codigo, nombre, creds, nivel ?? null]);
+      values.push([codigo, nombre, creds, nivel ?? null, prerequisito ?? null]);
     });
 
     if (errors.length > 0) {
@@ -103,7 +107,7 @@ export const createAsignaturas = async (req, res) => {
     try {
       await conn.beginTransaction();
       const [result] = await conn.query(
-        'INSERT INTO asignaturas (codigo, nombre, creditos, nivel) VALUES ?',
+        'INSERT INTO asignaturas (codigo, nombre, creditos, nivel, prerequisito) VALUES ?',
         [values]
       );
       await conn.commit();
@@ -146,6 +150,23 @@ export const updateAsignatura = async (req, res) => {
         return res.status(400).json({ message: "creditos debe ser un número entero no negativo" });
       }
       values[idx] = creds;
+    }
+    // validar nivel y prerequisito si se envían
+    if (keys.includes("nivel")) {
+      const idx = keys.indexOf("nivel");
+      if (values[idx] === null || values[idx] === undefined) {
+        values[idx] = null;
+      } else {
+        values[idx] = String(values[idx]);
+      }
+    }
+    if (keys.includes("prerequisito")) {
+      const idx = keys.indexOf("prerequisito");
+      if (values[idx] === null || values[idx] === undefined) {
+        values[idx] = null;
+      } else {
+        values[idx] = String(values[idx]);
+      }
     }
 
     const setClause = keys.map((key) => `${key} = ?`).join(", ");

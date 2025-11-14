@@ -15,6 +15,7 @@
     </div>
     <div style="margin-top:8px">
       <button class="btn" type="submit">Buscar Asignatura</button>
+      <button class="btn" type="button" style="margin-left:8px" (click)="fetchAsignaturas()" [disabled]="loading">Refrescar <span *ngIf="loading" class="spinner small"></span></button>
     </div>
   </form>
 
@@ -39,6 +40,7 @@
             <th>ASIGNATURA</th>
             <th>CRÉDITOS</th>
             <th>NIVEL</th>
+            <th>PREREQUISITOS</th>
           </tr>
         </thead>
         <tbody>
@@ -47,6 +49,7 @@
             <td>{{ r.nombre }}</td>
             <td>{{ r.creditos }}</td>
             <td>{{ r.nivel }}</td>
+            <td>{{ r.prerequisito }}</td>
           </tr>
           <tr *ngIf="recordsToInsert.length === 0">
             <td colspan="4">No se detectaron registros válidos para insertar.</td>
@@ -70,6 +73,7 @@
         <th>Nombre</th>
         <th>Créditos</th>
         <th>Nivel</th>
+        <th>Prerequisitos</th>
       </tr>
     </thead>
     <tbody>
@@ -78,6 +82,7 @@
         <td>{{ a.nombre || '' }}</td>
         <td>{{ a.creditos || '' }}</td>
         <td>{{ a.nivel || '' }}</td>
+        <td>{{ a.prerequisito || (a.prerequisitos ? a.prerequisitos.join(', ') : '-') }}</td>
       </tr>
     </tbody>
   </table>

@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./aulas').then(m => m.AulasComponent)
+    loadComponent: () => import('./aulas-component').then(m => m.AulasComponent)
   }
 ];
 

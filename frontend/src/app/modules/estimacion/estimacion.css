@@ -47,3 +47,156 @@
         grid-template-columns: 1fr
     }
 }
+
+.estimacion-root {
+    padding: 12px;
+    max-width: 1100px;
+    margin: 10px auto;
+}
+
+.estimacion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px
+}
+
+.estimacion-header h1 {
+    margin: 0;
+    font-size: 1.6rem
+}
+
+.estimacion-header .muted {
+    color: #666;
+    margin: 4px 0 0
+}
+
+.estimacion-header .meta {
+    display: flex;
+    gap: 8px;
+    align-items: center
+}
+
+.estimacion-header .meta label {
+    margin-right: 4px
+}
+
+.estimacion-form .mode-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px
+}
+
+.estimacion-form .mode-toggle button {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: gray;
+}
+
+.estimacion-form .mode-toggle button.active {
+    background: #2E7D32;
+    color: #fff;
+    border-color: #2E7D32
+}
+
+.card {
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 12px
+}
+
+    /* Visual states for recommendation results */
+    .ok td { background: #e8f8f5; }
+    .alerta td { background: #fff4f4; color: #8a1f1f; }
+    .results-table td { transition: background 0.2s ease; }
+
+.card h3 {
+    margin-top: 0
+}
+
+.row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center
+}
+
+.col {
+    flex: 1
+}
+
+.col.small {
+    width: 150px
+}
+
+.input-sm {
+    width: 120px
+}
+.search-row { display: flex; gap: 8px; align-items: center; margin-bottom: 6px }
+.search-row input { flex: 1 }
+.select-count { font-size: 0.85rem; margin-bottom: 6px }
+
+.full {
+    width: 100%
+}
+
+.actions {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center
+}
+
+.primary {
+    background: #2E7D32;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px
+}
+
+.bulk-table table,
+.results-table {
+    width: 100%;
+    border-collapse: collapse
+}
+
+.bulk-table th,
+.bulk-table td,
+.results-table th,
+.results-table td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    text-align: left
+}
+
+.recommendations {
+    margin-top: 12px;
+    background: #f8f9fb;
+    padding: 10px;
+    border-radius: 6px
+}
+
+.recommendation-list div {
+    padding: 6px 0;
+    border-bottom: 1px dashed #eee
+}
+
+.muted {
+    color: #666
+}
+
+@media (max-width:700px) {
+    .row {
+        flex-direction: column
+    }
+
+    .col.small {
+        width: 100%
+    }
+}

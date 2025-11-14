@@ -1,60 +1,118 @@
-<div class="wrap">
-	<h1>Estimación de Cupos</h1>
-
-	<div class="panel">
-		<label>
-			Periodo histórico de referencia
-			<select [(ngModel)]="periodoSeleccionado" name="periodoSeleccionado">
-				<option value="">Seleccione</option>
-				<option *ngFor="let p of periodos" [value]="p">{{ p }}</option>
-			</select>
-		</label>
-
-		<label>
-			Asignatura
-			<select [(ngModel)]="asignaturaSeleccionada" name="asignaturaSeleccionada">
-				<option [ngValue]="null">Seleccione</option>
-				<option *ngFor="let a of asignaturas" [ngValue]="a">{{ a.codigo || a.codigo_asignatura }} - {{ a.nombre || a.nombre_asignatura }}</option>
-			</select>
-		</label>
-
-		<label>
-			Capacidad del aula
-			<input type="number" [(ngModel)]="capacidadAula" name="capacidadAula" />
-		</label>
-
-		<div class="actions">
-			<button (click)="estimar()">Estimar cupos</button>
+<div class="estimacion-root container">
+	<header class="estimacion-header">
+		<div>
+			<h1>Estimación de Cupos</h1>
+			<p class="muted">Calcula cuántos cupos asignar por asignatura o genera estimaciones masivas para un período académico.</p>
 		</div>
-	</div>
-
-	<div *ngIf="sugerido !== null" class="resultado">
-		<h3>Cupos sugeridos para {{ periodoSeleccionado }}: {{ sugerido }}</h3>
-		<label>
-			Cupos finales asignados
-			<input type="number" [(ngModel)]="finalAsignado" [max]="capacidadAula || null" />
-		</label>
-		<p class="helper">No puede superar la capacidad del aula ({{ capacidadAula || 'sin especificar' }})</p>
-		<div class="actions">
-			<button (click)="guardar()">Guardar estimación</button>
-			<button (click)="cancelar()">Cancelar</button>
+		<div class="meta">
+			<label>Año académico</label>
+			<input type="number" class="input-sm" [(ngModel)]="anioAcademico" placeholder="2024" />
+			<label>Periodo</label>
+			<select class="input-sm" [(ngModel)]="periodo">
+				<option *ngFor="let p of periodos" [value]="p">{{p}}</option>
+			</select>
 		</div>
-	</div>
+	</header>
 
-	<h2 style="margin-top:18px">Cupos estimados guardados</h2>
-	<table class="tbl">
-		<thead>
-			<tr><th>Código</th><th>Año</th><th>Periodo</th><th>Cupos</th><th>Fecha</th></tr>
-		</thead>
-		<tbody>
-			<tr *ngFor="let e of estimaciones">
-				<td>{{ e.codigo_asignatura }}</td>
-				<td>{{ e.anio }}</td>
-				<td>{{ e.periodo }}</td>
-				<td>{{ e.cupos_calculados }}</td>
-				<td>{{ e.fecha | date:'short' }}</td>
-			</tr>
-			<tr *ngIf="estimaciones.length === 0"><td colspan="5">No hay estimaciones registradas</td></tr>
-		</tbody>
-	</table>
+	<section class="estimacion-form">
+		<div class="mode-toggle">
+			<button [class.active]="estimateMode==='single'" (click)="estimateMode='single'">Por asignatura</button>
+			<button [class.active]="estimateMode==='all'" (click)="estimateMode='all'">Para todas</button>
+		</div>
+
+		<div *ngIf="estimateMode==='single'" class="card single-mode">
+			<h3>Estimación por asignatura</h3>
+			<div class="row">
+				<div class="col">
+					<label>Asignatura</label>
+					<div class="search-row">
+						<input type="text" placeholder="Buscar por código o nombre" [(ngModel)]="asignaturaFilter" class="full" />
+						<button type="button" (click)="asignaturaFilter='';">Limpiar</button>
+					</div>
+					<div class="select-count muted">Resultados: {{ filteredAsignaturas.length }}</div>
+					<select [(ngModel)]="asignaturaSeleccionada" (ngModelChange)="onAsignaturaSelected($event)" class="full">
+						<option [ngValue]="null">-- Seleccione --</option>
+						<option *ngFor="let a of filteredAsignaturas" [ngValue]="a">{{ (a.codigo || a.codigo_asignatura) ? ( (a.codigo || a.codigo_asignatura) + ' - ' + (a.getDisplayName()) ) : a.getDisplayName() }}</option>
+					</select>
+				</div>
+				<div class="col small">
+					<label>Inscritos (prev)</label>
+					<input type="number" [(ngModel)]="inscritosPrev" />
+				</div>
+				<div class="col small">
+					<label>% Crecimiento</label>
+					<input type="number" [(ngModel)]="tasaCrecimiento" />
+				</div>
+				<div class="col small">
+					<label>% Deserción</label>
+					<input type="number" [(ngModel)]="tasaDesercion" />
+				</div>
+				<div class="col small">
+					<label>Repitentes</label>
+					<input type="number" [(ngModel)]="repitentes" />
+				</div>
+			</div>
+			<div class="row actions">
+				<label>Capacidad aula (opcional)</label>
+				<input type="number" [(ngModel)]="capacidadAula" class="input-sm" />
+				<button class="primary" (click)="calcularEstimacion()">Calcular Estimación</button>
+			</div>
+		</div>
+
+		<div *ngIf="estimateMode==='all'" class="card all-mode">
+			<h3>Estimación para todas las asignaturas</h3>
+			<p class="muted">Prepare la tabla de asignaturas (puede importar o usar el listado actual). Edite columnas si necesita introducir inscritos previos o parámetros por asignatura.</p>
+			<div class="bulk-table">
+				<table>
+					<thead>
+						<tr><th>Asignatura</th><th>Inscritos prev</th><th>% Crec.</th><th>% Deser.</th><th>Repitentes</th></tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let r of bulkRows; let i = index">
+							<td>{{r.asignatura}}</td>
+							<td><input type="number" [(ngModel)]="r.inscritos" /></td>
+							<td><input type="number" [(ngModel)]="r.crecimiento" /></td>
+							<td><input type="number" [(ngModel)]="r.desercion" /></td>
+							<td><input type="number" [(ngModel)]="r.repitentes" /></td>
+						</tr>
+						<tr *ngIf="!bulkRows || bulkRows.length===0"><td colspan="5" class="muted">No hay filas. Se usarán las asignaturas existentes para generar estimaciones.</td></tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="row actions">
+				<button class="primary" (click)="calcularEstimacion()">Calcular estimaciones masivas</button>
+			</div>
+		</div>
+	</section>
+
+	<section *ngIf="showResults" class="estimacion-results card">
+		<h3>Resultados</h3>
+			<table class="results-table">
+			<thead>
+				<tr><th>Asignatura</th><th>Cupos sugeridos</th><th>Aula</th><th>Capacidad</th><th>Grupos</th><th>Recomendación</th></tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let r of estimatedResults" [class.ok]="!r.requiereDivision" [class.alerta]="r.requiereDivision">
+					<td>{{r.asignatura}}</td>
+					<td>{{r.cupos || '-'}}</td>
+					<td>{{r.aula || '-'}}</td>
+					<td>{{r.capacidad || '-'}}</td>
+					<td>{{r.grupos || '-'}}</td>
+					<td>{{r.mensaje || (r.requiereDivision ? ('Esta asignatura supera todas las aulas → Se proponen ' + (r.grupos || '-') + ' grupos.') : ('Aula sugerida: ' + (r.aula || '-') + ' (' + (r.capacidad || '-') + ' estudiantes)'))}}</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="recommendations">
+			<h4>Recomendaciones de Aulas</h4>
+			<p class="muted">El sistema sugiere aulas basadas en la capacidad requerida. Marque "Dividir" si desea crear múltiples grupos para la asignatura.</p>
+			<div class="recommendation-list">
+				<div *ngFor="let r of estimatedResults">
+					<strong>{{r.asignatura}}</strong>: {{r.cupos ? (r.capacidad || '—') + ' plazas' : 'Sin estimación'}}
+				</div>
+			</div>
+		</div>
+	</section>
+
 </div>
+

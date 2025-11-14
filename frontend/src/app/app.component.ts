@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { AuthService } from './services/auth';
+import { AuthService } from './services/auth-service';
 import { LoadingOverlayComponent } from './shared/loading-overlay.component';
 
 @Component({

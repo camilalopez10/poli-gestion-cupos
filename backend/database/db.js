@@ -6,7 +6,7 @@ dotenv.config();
 export const db = mysql.createPool({
     host: process.env.DB_HOST || 'sql.freedb.tech',
     user: process.env.DB_USER || 'freedb_camila',
-    password: process.env.DB_PASS || 'sc#b2apsWZngCAh',
+    password: process.env.DB_PASS || 'XH4D$S8$YVXyg&m',
     database: process.env.DB_NAME || 'freedb_poli_gestion',
     port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
     waitForConnections: true,

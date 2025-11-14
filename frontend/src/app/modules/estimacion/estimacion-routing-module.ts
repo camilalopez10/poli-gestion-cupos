@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./estimacion').then(m => m.EstimacionComponent)
+    loadComponent: () => import('./estimacion-component').then(m => m.EstimacionComponent)
   }
 ];
 

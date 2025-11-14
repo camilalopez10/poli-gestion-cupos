@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./historico').then(m => m.HistoricoComponent)
+    loadComponent: () => import('./historico-component').then(m => m.HistoricoComponent)
   }
 ];
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, NgIf, NgForOf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UsuariosService } from '../../services/usuarios';
+import { UsuariosService } from '../../services/usuarios-service';
 import { LoadingService } from '../../services/loading.service';
 import { firstValueFrom } from 'rxjs';
 
