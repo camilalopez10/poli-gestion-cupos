@@ -2,10 +2,13 @@
   <img src="assets/img/logo-poli.jpg" alt="Logo Poli">
   <ul>
     <li [class.active]="currentModule==='inicio'"><a (click)="loadModule('inicio')">Inicio</a></li>
-    <li [class.active]="currentModule==='usuarios'"><a (click)="loadModule('usuarios')">Gestión de Usuarios</a></li>
-    <li [class.active]="currentModule==='asignaturas'"><a (click)="loadModule('asignaturas')">Gestión de Asignaturas</a></li>
+    <li *ngIf="isAdmin" [class.active]="currentModule==='usuarios'"><a (click)="loadModule('usuarios')">Gestión de
+        Usuarios</a></li>
+    <li [class.active]="currentModule==='asignaturas'"><a (click)="loadModule('asignaturas')">Gestión de Asignaturas</a>
+    </li>
     <li [class.active]="currentModule==='aulas'"><a (click)="loadModule('aulas')">Gestión de Aulas</a></li>
-    <li [class.active]="currentModule==='estimacion'"><a (click)="loadModule('estimacion')">Estimación de Cupos</a></li>
+    <li [class.active]="currentModule==='estimacion'"><a (click)="loadModule('estimacion')">Estimación de Cupos y
+        Distribución de Grupos</a></li>
     <li [class.active]="currentModule==='historico'"><a (click)="loadModule('historico')">Análisis Histórico</a></li>
     <li [class.active]="currentModule==='pensum'"><a (click)="loadModule('pensum')">Malla Curricular</a></li>
     <li [class.active]="currentModule==='historial'"><a (click)="loadModule('historial')">Historial de Cambios</a></li>
@@ -23,65 +26,74 @@
     <div id="inicio" class="tarjetas-container">
 
       <div class="module-card" role="button" (click)="loadModule('asignaturas')">
-        <img src="assets/img/asignatura.png" alt="Asignaturas" class="card-icon" onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
+        <img src="assets/img/asignatura.png" alt="Asignaturas" class="card-icon"
+          onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
         <h3>Gestión de Asignaturas</h3>
         <p>Registrar, editar e importar asignaturas.</p>
         <button class="go-module" (click)="$event.stopPropagation(); loadModule('asignaturas')">Ir al módulo</button>
       </div>
 
-      <div class="module-card" role="button" (click)="loadModule('usuarios')">
-        <img src="assets/img/grupos.png" alt="Usuarios" class="card-icon" onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
+      <div *ngIf="isAdmin" class="module-card" role="button" (click)="loadModule('usuarios')">
+        <img src="assets/img/grupos.png" alt="Usuarios" class="card-icon"
+          onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
         <h3>Gestión de Usuarios</h3>
         <p>Administrar usuarios y roles del sistema.</p>
         <button class="go-module" (click)="$event.stopPropagation(); loadModule('usuarios')">Ir al módulo</button>
       </div>
 
       <div class="module-card" role="button" (click)="loadModule('aulas')">
-        <img src="assets/img/aulas.png" alt="Aulas" class="card-icon" onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
+        <img src="assets/img/aulas.png" alt="Aulas" class="card-icon"
+          onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
         <h3>Gestión de Aulas</h3>
         <p>Registrar aulas o importar desde Excel/CSV.</p>
         <button class="go-module" (click)="$event.stopPropagation(); loadModule('aulas')">Ir al módulo</button>
       </div>
 
       <div class="module-card" role="button" (click)="loadModule('historico')">
-        <img src="assets/img/historico.png" alt="Histórico" class="card-icon" onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
+        <img src="assets/img/historico.png" alt="Histórico" class="card-icon"
+          onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
         <h3>Análisis Histórico</h3>
         <p>Visualiza indicadores y gráficas interactivas.</p>
         <button class="go-module" (click)="$event.stopPropagation(); loadModule('historico')">Ir al módulo</button>
       </div>
 
       <div class="module-card" role="button" (click)="loadModule('pensum')">
-        <img src="assets/img/cupos.png" alt="Pensum" class="card-icon" onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
+        <img src="assets/img/cupos.png" alt="Pensum" class="card-icon"
+          onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
         <h3>Malla Curricular</h3>
         <p>Gestión curricular y requisitos.</p>
         <button class="go-module" (click)="$event.stopPropagation(); loadModule('pensum')">Ir al módulo</button>
       </div>
 
       <div class="module-card" role="button" (click)="loadModule('estimacion')">
-        <img src="assets/img/academico.png" alt="Estimación de Cupos" class="card-icon" onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
+        <img src="assets/img/academico.png" alt="Estimación de Cupos" class="card-icon"
+          onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
         <h3>Estimación de Cupos</h3>
         <p>Calcular cupos con base en datos históricos.</p>
         <button class="go-module" (click)="$event.stopPropagation(); loadModule('estimacion')">Ir al módulo</button>
       </div>
 
       <div class="module-card" role="button" (click)="loadModule('historial')">
-        <img src="assets/img/Grup.jpg" alt="Historial de Cambios" class="card-icon" onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
+        <img src="assets/img/Grup.jpg" alt="Historial de Cambios" class="card-icon"
+          onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
         <h3>Historial de Cambios</h3>
         <p>Consulta el registro de modificaciones realizadas en el sistema.</p>
         <button class="go-module" (click)="$event.stopPropagation(); loadModule('historial')">Ir al módulo</button>
       </div>
 
       <div class="module-card" role="button" (click)="loadModule('acerca')">
-        <img src="assets/img/acerca.jpeg" alt="Acerca de" class="card-icon" onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
+        <img src="assets/img/acerca.jpeg" alt="Acerca de" class="card-icon"
+          onerror="this.onerror=null;this.src='assets/img/placeholder.svg'">
         <h3>Acerca de</h3>
-        <p>Desarrollado por Camila López – Ingeniera en Informática.<br>© 2025 Politécnico Colombiano Jaime Isaza Cadavid.</p>
+        <p>Desarrollado por Camila López – Ingeniera en Informática.<br>© 2025 Politécnico Colombiano Jaime Isaza
+          Cadavid.</p>
         <button class="go-module" (click)="$event.stopPropagation(); loadModule('acerca')">Ver información</button>
       </div>
 
     </div>
   </section>
 
-  <section [hidden]="currentModule!=='usuarios'">
+  <section *ngIf="isAdmin" [hidden]="currentModule!=='usuarios'">
     <app-usuarios></app-usuarios>
   </section>
 

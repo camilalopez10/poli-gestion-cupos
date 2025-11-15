@@ -1,17 +1,10 @@
 <div class="estimacion-root container">
 	<header class="estimacion-header">
 		<div>
-			<h1>Estimación de Cupos</h1>
+			<h1>Estimación de Cupos y Distribución de grupos</h1>
 			<p class="muted">Calcula cuántos cupos asignar por asignatura o genera estimaciones masivas para un período académico.</p>
 		</div>
-		<div class="meta">
-			<label>Año académico</label>
-			<input type="number" class="input-sm" [(ngModel)]="anioAcademico" placeholder="2024" />
-			<label>Periodo</label>
-			<select class="input-sm" [(ngModel)]="periodo">
-				<option *ngFor="let p of periodos" [value]="p">{{p}}</option>
-			</select>
-		</div>
+
 	</header>
 
 	<section class="estimacion-form">

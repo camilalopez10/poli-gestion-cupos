@@ -1,7 +1,7 @@
 // src/app/modules/dashboard/dashboard-module.ts
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DashboardComponent } from './dashboard'; // componente standalone
+import { DashboardComponent } from './dashboard-component';
 
 @NgModule({
   imports: [
