@@ -63,3 +63,17 @@ td {
     box-shadow: 0 6px 18px rgba(0,0,0,0.2);
     z-index: 9999;
 }
+button[disabled] {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* small gap between adjacent buttons inside the module for better spacing */
+.wrap .btn {
+    margin-right: 8px;
+}
+
+/* ensure buttons inside table rows also have spacing */
+.wrap table button {
+    margin-right: 8px;
+}

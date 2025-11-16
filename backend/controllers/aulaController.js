@@ -31,10 +31,10 @@ export const getAula = async (req, res) => {
 // Crear un aula
 export const createAula = async (req, res) => {
   try {
-    const { nombre, capacidad, ubicacion, tipo } = req.body;
-
-    if (!nombre || capacidad === undefined || capacidad === null || !ubicacion || !tipo) {
-      return res.status(400).json({ message: "Los campos nombre, capacidad, ubicacion y tipo son obligatorios" });
+    const { nombre, capacidad, ubicacion } = req.body;
+    
+    if (!nombre || capacidad === undefined || capacidad === null || !ubicacion) {
+      return res.status(400).json({ message: "Los campos nombre, capacidad y ubicacion son obligatorios" });
     }
 
     const capInt = parseInt(capacidad, 10);
@@ -42,14 +42,14 @@ export const createAula = async (req, res) => {
       return res.status(400).json({ message: "capacidad debe ser un número entero no negativo" });
     }
 
-    const query = "INSERT INTO aulas (nombre, capacidad, ubicacion, tipo) VALUES (?, ?, ?, ?)";
-    const values = [nombre, capInt, ubicacion, tipo];
+    const query = "INSERT INTO aulas (nombre, capacidad, ubicacion) VALUES (?, ?, ?)";
+    const values = [nombre, capInt, ubicacion ];
 
     const [result] = await db.query(query, values);
 
     res.status(201).json({
       message: "Aula creada exitosamente",
-      aula: { id: result.insertId, nombre, capacidad: capInt, ubicacion, tipo },
+      aula: { id: result.insertId, nombre, capacidad: capInt, ubicacion },
     });
   } catch (error) {
     console.error("Error al crear aula:", error);

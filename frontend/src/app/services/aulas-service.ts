@@ -18,12 +18,12 @@ export class AulasService {
     return this.http.get<any[]>('php/aulas_api.php?action=list');
   }
 
-  create(payload: { nombre: string; capacidad: number; ubicacion: string; tipo: string }) {
+  create(payload: { nombre: string; capacidad: number; ubicacion: string}) {
     if (this.baseUrl) return this.http.post<any>(`${this.baseUrl}/api/createAula`, payload);
     return this.http.post<any>('php/aulas_api.php?action=create', payload);
   }
 
-  update(id: string, payload: { nombre?: string; capacidad?: number; ubicacion?: string; tipo?: string }) {
+  update(id: string, payload: { nombre?: string; capacidad?: number; ubicacion?: string}) {
     if (this.baseUrl) return this.http.put<any>(`${this.baseUrl}/api/updateAula/${encodeURIComponent(id)}`, payload);
     return this.http.post<any>(`php/aulas_api.php?action=update&id=${encodeURIComponent(id)}`, payload);
   }
